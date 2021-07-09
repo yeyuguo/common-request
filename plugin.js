@@ -35,7 +35,7 @@ export function loginHandle(response, next) {
     }else{
       href += `?${isLogin}`
     }
-    const LOGIN_URL = `${protocol}//xxxx.com?returnurl=${encodeURIComponent(href)}`;
+    const LOGIN_URL = `www.baidu.com`;
     window.location.href = LOGIN_URL
   } else {
     next()
