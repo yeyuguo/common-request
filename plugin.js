@@ -23,8 +23,7 @@ export function commonError(response, next) {
 export function loginHandle(response, next) {
   // 未登录
   const { data } = response || {}
-  // -2 是历史逻辑,  403/413 是最新逻辑
-  const codeLogin = [-2, 403, 413]
+  const codeLogin = [-1]
   if(codeLogin.includes(data.code)) {
     const { protocol } = location
     let { href } = location
