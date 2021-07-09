@@ -1,0 +1,22 @@
+{
+  "name": "request",
+  "version": "1.0.0",
+  "description": "公共请求方法，方便新项目开箱即用",
+  "main": "plugin-register.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/yeyuguo/common-request.git"
+  },
+  "keywords": [
+    "公共请求"
+  ],
+  "author": "yeyuguo",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/yeyuguo/common-request/issues"
+  },
+  "homepage": "https://github.com/yeyuguo/common-request#readme"
+}
