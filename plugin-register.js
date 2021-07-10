@@ -12,6 +12,7 @@
 /**
  * 插件机制
  * 优先使用传递参数
+ * !对外暴露的 use 注册接口, 必须明确是不满足场景下的处理: 不满足跳过、不满足熔断后续 (100%确定的)
  * @param {Object} context 对象输入
  * @param {Function} lastNext 洋葱机制的最后一次之后的 默认处理函数
  * */
@@ -30,9 +31,20 @@ export default class PluginRegister{
   /**
    * 注册插件  建造者模式
    * todo 单插件的注册, 使用依赖注入 思想提供 option, 参考 shout.js 机制
+   * todo 更换函数名为 useFused
+   * todo 删除该函数, 对外暴露应该知道该插件的不满足功能
    * @param {Array|Function} plugin
    */
   use(plugin) {
+    this.middleware = this.middleware.concat(plugin)
+    return this
+  }
+  // 插件不满足, 就跳过, 命名来源与 rxjs 的 tap
+  useTap() {
+    return this
+  }
+  // 熔断机制, 下一个的执行依赖上一个执行
+  useFused(plugin) {
     this.middleware = this.middleware.concat(plugin)
     return this
   }
