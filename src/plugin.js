@@ -19,11 +19,11 @@ export function commonError(response, next) {
   }
 }
 
-
+let isIntercept = false
 export function loginHandle(response, next) {
   // 未登录
   const { data } = response || {}
-  const codeLogin = [-1]
+  const codeLogin = [400]
   if(codeLogin.includes(data.code)) {
     const { protocol } = location
     let { href } = location
@@ -35,7 +35,11 @@ export function loginHandle(response, next) {
       href += `?${isLogin}`
     }
     const LOGIN_URL = `www.baidu.com`;
-    window.location.href = LOGIN_URL
+    // window.location.href = LOGIN_URL
+    // TODO 需要做一个拦截后面所有请求不做处理
+    console.log('被登陆拦截了，后面无打印 ');
+    isIntercept = true
+    return 'intercept'
   } else {
     next()
   }

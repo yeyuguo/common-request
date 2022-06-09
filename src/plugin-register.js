@@ -65,6 +65,7 @@ export default class PluginRegister{
 /**
  * 洋葱机制实现
  */
+let _temp_count = 0
 function composeOnion(plugins) {
   if(!Array.isArray(plugins)){
     throw new TypeError('中间件需要是数组')
@@ -99,11 +100,22 @@ function composeOnion(plugins) {
         return Promise.resolve()
       }
       try {
-        return Promise.resolve(
-          fn(context, function next() {
-            return dispatch(current + 1)
-          })
-        )
+        const nextPlugin = function () {
+          return dispatch(current + 1)
+        }
+        const result = fn(context, nextPlugin)
+        console.log('result: ', result, _temp_count++);
+        // 不需要再执行后面中间件
+        // TODO 返回值有心智成本
+        if(result === 'intercept') {
+          return Promise.reject(context)
+        }
+        return Promise.resolve(result)
+        // return Promise.resolve(
+        //   fn(context, function next() {
+        //     return dispatch(current + 1)
+        //   })
+        // )
       } catch (error) {
         console.log('error: ', error);
         return Promise.reject(error)

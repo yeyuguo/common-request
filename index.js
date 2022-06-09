@@ -1,7 +1,6 @@
 import request from '/src/axios-request'
 
 for(let i=0;i<10;i++) {
-  console.log('i: ', i);
   // const mockBaseURL = 'japi.jd.com/mock/902/testrequest'
   // const mockBaseURL = 'japi.jd.com/mock/902/testrequest?type=error'
   // const mockBaseURL = 'japi.jd.com/mock/902/testrequest?type=error'
@@ -22,8 +21,8 @@ for(let i=0;i<10;i++) {
           type: list[Math.round(Math.random())],
         }
       }
-    }, 
-    {mock: true}
+    },
+    {mock: true, isErrorTip: true}
   )
   .then(data=>{
     console.log(`data-${i}:`, data);

@@ -18,10 +18,11 @@ const instance = axios.create({
 
 instance.interceptors.response.use(async function(response){
   const { config } = response
-  let plugins = [loginHandle]
-  if(config.selfOption && config.selfOption.isErrorTip) {
-    plugins = [loginHandle, commonError]
-  }
+  // let plugins = [loginHandle]
+  // if(config.selfOption && config.selfOption.isErrorTip) {
+  //   plugins = [loginHandle, commonError]
+  // }
+  let plugins =  [loginHandle, commonError]
 
   // const instance = new PluginRegister(response, defaultHandle) // defaultHandle 无法处理
   const instance = new PluginRegister(response)
@@ -92,7 +93,13 @@ function colorParams({ url, method, functionId, appid, loginType, params, isEnco
 export default function({url='/api?', method="GET", functionId, params, isEncode = false, loginType='2' ,appid='u', mockBaseURL="//japi.jd.com/mock/902"}, { mock=false, isErrorTip=false}={}) {
   // 执行 mock 机制
   if(mock) {
-    return instance(mockRequestColor({mockBaseURL, method, functionId,  params}))
+    return instance({
+      ...mockRequestColor({mockBaseURL, method, functionId,  params}),
+      selfOption: {
+        mock, 
+        isErrorTip
+      }
+    })
   }
 
   let requestParams
