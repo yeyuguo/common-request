@@ -18,5 +18,9 @@
   "bugs": {
     "url": "https://github.com/yeyuguo/common-request/issues"
   },
-  "homepage": "https://github.com/yeyuguo/common-request#readme"
+  "homepage": "https://github.com/yeyuguo/common-request#readme",
+  "dependencies": {
+    "axios": "^0.27.2",
+    "parcel": "^2.6.0"
+  }
 }
