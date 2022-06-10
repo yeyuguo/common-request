@@ -38,10 +38,10 @@ export function loginHandle(response, next) {
     // window.location.href = LOGIN_URL
     // TODO 需要做一个拦截后面所有请求不做处理
     console.log('被登陆拦截了，后面无打印 ');
-    isIntercept = true
-    return 'intercept'
+    // isIntercept = true
+    // return 'intercept'
   } else {
-    next()
+    next('success')
   }
 }
 

@@ -27,7 +27,11 @@ instance.interceptors.response.use(async function(response){
   // const instance = new PluginRegister(response, defaultHandle) // defaultHandle 无法处理
   const instance = new PluginRegister(response)
   instance.use(plugins)
-  await instance.run()
+  try {
+    instance.run()
+  } catch (error) {
+    console.log('error: ', error);
+  }
   // !需要熔断后续所有处理
   if(response.break) {
     return null

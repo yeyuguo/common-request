@@ -15,12 +15,26 @@
  * !对外暴露的 use 注册接口, 必须明确是不满足场景下的处理: 不满足跳过、不满足熔断后续 (100%确定的)
  * @param {Object} context 对象输入
  * @param {Function} lastNext 洋葱机制的最后一次之后的 默认处理函数
+ * 
+ * TODO
+ * 1. 支持可以拦截不触发后面请求发起
+ * 2. 添加拦截不执行下一个中间件
+ * 
+ * 
+ * @example
+ * 拦截不让其他中间执行： 
+ * 1. 当前中间件没有 next()，外部 catch 拦截 run() 结果，使用 try{ instance.run()  }catch(e){}
+ * 2. next()支持参数，传递到下一个中间件做判断； 下一个中间件不执行 next
  * */
 export default class PluginRegister{
+  static instance // 单例使用
   constructor(context, lastNext) {
+    if(PluginRegister.instance) return PluginRegister.instance
     this.middleware = []
     this.context = context
     this.next = lastNext
+    this.intercept = false; 
+    PluginRegister.instance = this
   }
   /** 建造者模式
    * !不能传入参数, 使用 use 来做解耦扩展
@@ -40,6 +54,7 @@ export default class PluginRegister{
     return this
   }
   // 插件不满足, 就跳过, 命名来源与 rxjs 的 tap
+  // 可以不用跳过接口， 进入当前中间件直接 next()
   useTap() {
     return this
   }
@@ -60,10 +75,22 @@ export default class PluginRegister{
   static engine(plugins) {
     return composeOnion(plugins) 
   }
+  // 设置全局拦截
+  setIntercept() {
+    PluginRegister.intercept = true 
+  }
+  // 清除全局锁定
+  clearIntercept() {
+    PluginRegister.intercept = false 
+  }
 }
 
 /**
  * 洋葱机制实现
+ * 扩展支持：
+ * 1. 支持 next 传入参数； 
+ * 2. 当前中间件需要被拦截不执行下一次
+ *  待废弃2：next 支持传递参数让下一个中间件判断，下一个中间件不执行 next
  */
 let _temp_count = 0
 function composeOnion(plugins) {
@@ -82,7 +109,7 @@ function composeOnion(plugins) {
    */
   return function(context, next) {
     dispatch(0)
-    function dispatch(current) {
+    function dispatch(current, ...params) {
       // !当前索引必须大于上一次索引
       if(current <= _index) {
         return Promise.reject(new TypeError('next() 被调用多次'))
@@ -100,16 +127,18 @@ function composeOnion(plugins) {
         return Promise.resolve()
       }
       try {
-        const nextPlugin = function () {
-          return dispatch(current + 1)
+        const nextPlugin = function (...lastFnParams) {
+          console.log('...lastFnParams: ', ...lastFnParams);
+          return dispatch(current + 1, ...lastFnParams)
         }
-        const result = fn(context, nextPlugin)
+        const params = arguments.length ? Array.prototype.slice.call(arguments): [context]
+        const result = fn.apply(null, params.concat(nextPlugin))
         console.log('result: ', result, _temp_count++);
         // 不需要再执行后面中间件
         // TODO 返回值有心智成本
-        if(result === 'intercept') {
-          return Promise.reject(context)
-        }
+        // if(result === 'intercept') {
+        //   return Promise.reject(context)
+        // }
         return Promise.resolve(result)
         // return Promise.resolve(
         //   fn(context, function next() {
